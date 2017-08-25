@@ -52,7 +52,7 @@ def compute_scores(X, y, classifier):
     for i in xx:
         yy_ = []
         for r in range(1, tries + 1):
-            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.1, train_size=i, random_state=rng)
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.5, train_size=i, random_state=rng)
             classifier.fit(X_train, y_train)
             y_pred = classifier.predict(X_test)
             yy_.append(1 - np.mean(y_pred == y_test))
