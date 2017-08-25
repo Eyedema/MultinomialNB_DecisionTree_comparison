@@ -11,6 +11,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.datasets.mldata import fetch_mldata
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import Binarizer
+from variables import MY_ID, MY_KEY
 import sys
 import time
 
@@ -141,7 +142,7 @@ def exit_program():
 
 def save(name, percentages, tries):
     import telepot
-    bot = telepot.Bot('427278841:AAFALioK4nZ3ZN_olB_fR1uG9jxZpunxKG8')
+    bot = telepot.Bot(MY_KEY)
     import datetime
     timestamp = time.time()
     message = "Running time for %s with %s tries and train percentages of" \
@@ -151,8 +152,8 @@ def save(name, percentages, tries):
     date = (value.strftime('%d-%m h%Hm%Ms%S'))
     name = 'plots/{} {} tries={} percentage={}.png'.format(name, date, tries, percentages)
     plt.savefig(name)
-    bot.sendMessage(23616716, message)
-    bot.sendPhoto(23616716, open(name, 'rb'))
+    bot.sendMessage(MY_ID, message)
+    bot.sendPhoto(MY_ID, open(name, 'rb'))
 
 
 actions = {
