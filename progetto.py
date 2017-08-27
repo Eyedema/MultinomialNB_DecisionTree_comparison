@@ -1,19 +1,21 @@
-import matplotlib.pyplot as plt
-import numpy as np
-from sklearn.feature_extraction.text import TfidfTransformer
-from sklearn.datasets import fetch_20newsgroups
-from sklearn.datasets import load_digits
-from sklearn.datasets import load_breast_cancer
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.naive_bayes import MultinomialNB
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.datasets.mldata import fetch_mldata
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.preprocessing import Binarizer
-from variables import MY_ID, MY_KEY
 import sys
 import time
+
+import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.datasets import fetch_20newsgroups
+from sklearn.datasets import load_breast_cancer
+from sklearn.datasets import load_digits
+from sklearn.datasets.mldata import fetch_mldata
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfTransformer
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.tree import DecisionTreeClassifier
+
+from variables import MY_ID, MY_KEY
 
 start_time = 0
 
@@ -45,20 +47,19 @@ def plot_learning_curve(X, y, title):
 def compute_scores(X, y, classifier):
     heldout = [.9, .8, .7, .6, .5]
     xx = 1. - np.array(heldout)
-    rng = np.random.RandomState(42)
     yy = []
     std_dev = []
     tries = 10
     for i in xx:
         yy_ = []
         for r in range(1, tries + 1):
-            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.5, train_size=i, random_state=rng)
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.5, train_size=i)
             classifier.fit(X_train, y_train)
             y_pred = classifier.predict(X_test)
-            yy_.append(1 - np.mean(y_pred == y_test))
-        yy.append(np.mean(yy_))
-        std_dev.append(np.std(yy))
-    # transform yy and std_dev in numpy arrays (yy_, std_dev_) for the standard deviation plotting
+            yy_.append(1 - accuracy_score(y_true=y_test, y_pred=y_pred))
+        yy.append(np.mean(yy_, dtype=np.float64))
+        std_dev.append(np.std(yy_, dtype=np.float64))
+    #   transform yy and std_dev in numpy arrays (yy_, std_dev_) for the standard deviation plotting
     #   and return them, along with the train percentages (xx), scores (yy), and std_dev.
 
     #   Return also tries-1 for debug to save the image
@@ -93,31 +94,12 @@ def mnist_data():
     plot_learning_curve(X, y, title)
 
 
-def leukemia_data():
-    leukemia = fetch_mldata('leukemia')
-    X_unscaled, y = leukemia.data, leukemia.target
-    #   Scale data from [-n, m] to [0, 1]. The classificator can't handle
-    #   negative data values.
-    X = MinMaxScaler().fit_transform(X_unscaled)
-    title = "Learning Curve Comparison for leukemia"
-    plot_learning_curve(X, y, title)
-
-
-def breast_cancer():
-    cancer = load_breast_cancer()
-    X, y = cancer.data, cancer.target
-    title = "Learning Curve Comparison for breast_cancer"
-    plot_learning_curve(X, y, title)
-
-
 def menu():
     print """Welcome,\n
             Please choose an option:\n
             1. 20newsgroups\n
             2. load_digits\n
             3. MNIST\n
-            4. leukemia\n
-            5. breast_cancer\n
             0. Quit"""
     choice = input(">>")
     exec_choice(choice)
@@ -133,7 +115,7 @@ def exec_choice(choice):
         actions[choice]()
     except KeyError:
         print "Invalid option"
-        actions['menu']()
+        menu()
 
 
 def exit_program():
@@ -157,12 +139,9 @@ def save(name, percentages, tries):
 
 
 actions = {
-    'menu': menu,
     1: twenty_newsgroups,
     2: loaddigits,
     3: mnist_data,
-    4: leukemia_data,
-    5: breast_cancer,
     0: exit
 }
 
