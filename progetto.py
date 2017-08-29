@@ -4,7 +4,6 @@ import time
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.datasets import fetch_20newsgroups
-from sklearn.datasets import load_breast_cancer
 from sklearn.datasets import load_digits
 from sklearn.datasets.mldata import fetch_mldata
 from sklearn.feature_extraction.text import CountVectorizer
@@ -12,8 +11,8 @@ from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
-from sklearn.preprocessing import MinMaxScaler
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.datasets import load_svmlight_file
 
 from variables import MY_ID, MY_KEY
 
@@ -85,12 +84,22 @@ def loaddigits():
 
 def mnist_data():
     mnist = fetch_mldata('MNIST original')
-    X_unscaled, y = mnist.data, mnist.target
-    #   Scale data from [0, 255] to [0, 1] where value=1 iff old_value > 100.
-    #   Since the data is from an image, we do not care about the grey area,
-    #   we are just considering the white and black portion of the image.
-    X = Binarizer(threshold=100).transform(X_unscaled)
-    title = "Learning Curve Comparison for MNIST-binarized data"
+    X, y = mnist.data, mnist.target
+    title = "Learning Curve Comparison for MNIST"
+    plot_learning_curve(X, y, title)
+
+
+def yahoo():
+    X, y = load_svmlight_file("D:\UniFi\Terzo_anno\AI\yahoo-web-directory-topics.libsvm")
+    title = "Learning Curve Comparison for Yahoo"
+    print X.shape, y.shape
+    plot_learning_curve(X, y, title)
+
+
+def dmoz():
+    X, y = load_svmlight_file("D:\UniFi\Terzo_anno\AI\dmoz-web-directory-topics.libsvm")
+    title = "Learning Curve Comparison for DMOZ"
+    print X.shape, y.shape
     plot_learning_curve(X, y, title)
 
 
@@ -100,6 +109,8 @@ def menu():
             1. 20newsgroups\n
             2. load_digits\n
             3. MNIST\n
+            4. DMOZ\n
+            5. yahoo\n
             0. Quit"""
     choice = input(">>")
     exec_choice(choice)
@@ -142,6 +153,8 @@ actions = {
     1: twenty_newsgroups,
     2: loaddigits,
     3: mnist_data,
+    4: dmoz,
+    5: yahoo,
     0: exit
 }
 
