@@ -119,6 +119,7 @@ def menu():
 
 
 def exec_choice(choice):
+    global start_time
     if not isinstance(choice, int):
         print "Error"
         return
