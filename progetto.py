@@ -19,13 +19,20 @@ from variables import MY_ID, MY_KEY
 
 
 def plot_learning_curve(X, y, tries, title):
+    """This function plots the data once the compute_scores function has done evaluating them.
+
+    Parameters
+    -------
+    X : the data portion of the dataset
+    y : the target portion of the dataset
+    tries: # of tries to be performed
+    title: the plot title
+    """
     global xx
     classifiers = [
         ("Decision Tree", DecisionTreeClassifier(), (0, 0.627, 0.690)),
         ("Naive Bayes", MultinomialNB(), (0.921, 0.407, 0.254)),
-        #   max depth = 8
     ]
-    #   debug save image
     for name, classifier, color in classifiers:
         xx, yy, std_dev, yy_, std_dev_ = compute_scores(X, y, tries, classifier)
         plt.plot(xx, yy, 'o-', label=name, color=color)
@@ -41,8 +48,28 @@ def plot_learning_curve(X, y, tries, title):
     plt.show()
 
 
-#   http://scikit-learn.org/stable/auto_examples/linear_model/plot_sgd_comparison.html#
 def compute_scores(X, y, tries, classifier):
+    """This function returns evaluates the error on the test set and returns its mean and
+    standard deviation on a fixed number of tries.
+
+    http://scikit-learn.org/stable/auto_examples/linear_model/plot_sgd_comparison.html#
+
+
+    Parameters
+    -------
+    X : the data portion of the dataset
+    y : the target portion of the dataset
+    tries: # of tries to be performed
+    classifier: the classifier object, cane be either a Naive Bayes or Decision Tree type
+
+    Returns
+    -------
+    tuple
+        This function return a tuple containing the train percentages from 10% to 50% in logarithmic scale,
+        the mean of the error on the test set and the standard deviation on the same error. The function
+        also returns a copy of this last two objects, but converted into a Numpy array to draw them.
+
+    """
     heldout = [.9, .8, .7, .6, .5]
     xx = 1. - np.array(heldout)
     yy = []
@@ -57,15 +84,17 @@ def compute_scores(X, y, tries, classifier):
         yy.append(np.mean(yy_, dtype=np.float64))
         std_dev.append(np.std(yy_, dtype=np.float64))
     #   transform yy and std_dev in numpy arrays (yy_, std_dev_) for the standard deviation plotting
-    #   and return them, along with the train percentages (xx), scores (yy), and std_dev.
-
-    #   Return also tries-1 for debug to save the image
+    #   and return them, along with the train percentages (xx), errors (yy), and std_dev.
     yy_ = np.array(yy)
     std_dev_ = np.array(std_dev)
     return xx, yy, std_dev, yy_, std_dev_
 
 
 def twenty_newsgroups(tries):
+    """This function loads the 20NewsGroups dataset integrated in scikit-learn and splits
+    the data and the target.
+    http://scikit-learn.org/stable/datasets/twenty_newsgroups.html
+    """
     newsgroups = fetch_20newsgroups()
     X = TfidfTransformer().fit_transform(CountVectorizer().fit_transform(newsgroups.data))
     y = newsgroups.target
@@ -74,6 +103,10 @@ def twenty_newsgroups(tries):
 
 
 def loaddigits(tries):
+    """This function loads the Digits dataset integrated in scikit-learn and splits the
+    data and the target.
+    http://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_digits.html
+    """
     digits = load_digits()
     X, y = digits.data, digits.target
     title = "Learning Curve Comparison for load_digits"
@@ -81,14 +114,24 @@ def loaddigits(tries):
 
 
 def mnist_data(tries):
+    """This function fetches the MNIST dataset from MLDATA and splits the data and the
+    target.
+    http://scikit-learn.org/stable/modules/generated/sklearn.datasets.fetch_mldata.html
+    http://mldata.org/repository/data/viewslug/mnist-original/
+    """
     mnist = fetch_mldata('MNIST original')
     X, y = mnist.data, mnist.target
     title = "Learning Curve Comparison for MNIST"
-    plot_learning_curve(X, y, title)
+    plot_learning_curve(X, y, tries, title)
 
 
-#   https://stackoverflow.com/questions/1270951/how-to-refer-to-relative-paths-of-resources-when-working-with-a-code-repository
+#   https://stackoverflow.com/a/1270970/4014928
 def yahoo(tries):
+    """This function searches for the libsvm file containing the datasets and splits
+    the data and the target.
+    http://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_svmlight_file.html
+    http://mldata.org/repository/data/viewslug/yahoo-web-directory-topics/
+    """
     fn = os.path.join(os.path.dirname(__file__), "yahoo-web-directory-topics.libsvm")
     X, y = load_svmlight_file(fn)
     title = "Learning Curve Comparison for Yahoo"
@@ -97,6 +140,11 @@ def yahoo(tries):
 
 
 def dmoz(tries):
+    """This function searches for the libsvm file containing the datasets and splits
+    the data and the target.
+    http://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_svmlight_file.html
+    http://www.mldata.org/repository/data/viewslug/dmoz-web-directory-topics/
+    """
     fn = os.path.join(os.path.dirname(__file__), "dmoz-web-directory-topics.libsvm")
     X, y = load_svmlight_file(fn)
     title = "Learning Curve Comparison for DMOZ"
@@ -105,6 +153,7 @@ def dmoz(tries):
 
 
 def menu():
+    """This function prints the menu."""
     print """Welcome,\n
             Please choose an option:\n
             1. 20newsgroups\n
@@ -118,6 +167,9 @@ def menu():
 
 
 def exec_choice(choice):
+    """This function sets up the # of tries and calls the right function to start the test.
+    :raise KeyError
+            if the input is not int"""
     global start_time
     if not isinstance(choice, int):
         print "Error"
@@ -134,6 +186,7 @@ def exec_choice(choice):
 
 
 def exit_program():
+    """This function exits the program."""
     sys.exit()
 
 
