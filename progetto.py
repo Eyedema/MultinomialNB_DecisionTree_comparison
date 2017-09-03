@@ -97,7 +97,7 @@ def twenty_newsgroups(tries):
     the data and the target.
     http://scikit-learn.org/stable/datasets/twenty_newsgroups.html
     """
-    newsgroups = fetch_20newsgroups()
+    newsgroups = fetch_20newsgroups(remove=("headers", "quotes", "footers"))
     X = TfidfTransformer().fit_transform(CountVectorizer().fit_transform(newsgroups.data))
     y = newsgroups.target
     title = "Learning Curve Comparison for 20newsgroups"
@@ -139,7 +139,6 @@ def yahoo(tries):
     fn = os.path.join(os.path.dirname(__file__), "yahoo-web-directory-topics.libsvm")
     X, y = load_svmlight_file(fn)
     title = "Learning Curve Comparison for Yahoo"
-    print X.shape, y.shape
     plot_learning_curve(X, y, tries, title)
 
 
@@ -179,8 +178,7 @@ def exec_choice(choice):
         print "Error"
         return
     try:
-        print """How many tries would you
-                like to perform?"""
+        print "How many tries would you like to perform?"
         tries = input(">>")
         start_time = time.time()
         actions[choice](tries)
