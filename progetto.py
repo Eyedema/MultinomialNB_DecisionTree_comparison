@@ -97,7 +97,7 @@ def twenty_newsgroups(tries):
     the data and the target.
     http://scikit-learn.org/stable/datasets/twenty_newsgroups.html
     """
-    newsgroups = fetch_20newsgroups(remove=("headers", "quotes", "footers"))
+    newsgroups = fetch_20newsgroups(subset="all", remove=("headers", "quotes", "footers"))
     X = TfidfTransformer().fit_transform(CountVectorizer().fit_transform(newsgroups.data))
     y = newsgroups.target
     title = "Learning Curve Comparison for 20newsgroups"
