@@ -52,6 +52,8 @@ def compute_scores(X, y, tries, classifier):
     """This function evaluates the error on the test set and returns its mean and
     standard deviation on a fixed number of tries.
 
+    This function is a modification of an example in the scikit-learn documentation
+    that can be found on the following link:
     http://scikit-learn.org/stable/auto_examples/linear_model/plot_sgd_comparison.html#
 
 
