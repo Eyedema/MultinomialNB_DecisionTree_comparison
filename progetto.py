@@ -9,6 +9,7 @@ from sklearn.datasets import load_digits
 from sklearn.datasets import load_svmlight_file
 from sklearn.datasets.mldata import fetch_mldata
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
@@ -97,7 +98,7 @@ def twenty_newsgroups(tries):
     http://scikit-learn.org/stable/datasets/twenty_newsgroups.html
     """
     newsgroups = fetch_20newsgroups(subset="all", remove=("headers", "quotes", "footers"))
-    X = CountVectorizer(binary=True).fit_transform(newsgroups.data)
+    X = TfidfTransformer().fit_transform(CountVectorizer().fit_transform(newsgroups.data))
     y = newsgroups.target
     title = "Learning Curve Comparison for 20newsgroups"
     plot_learning_curve(X, y, tries, title)
@@ -112,7 +113,7 @@ def loaddigits(tries):
     """
     digits = load_digits()
     X, y = digits.data, digits.target
-    title = "Learning Curve Comparison for load_digits"
+    title = "Learning Curve Comparison for Digits"
     plot_learning_curve(X, y, tries, title)
 
 
@@ -120,7 +121,7 @@ def mnist_data(tries):
     """This function fetches the MNIST dataset from MLDATA and splits the data and the
     target.
     http://scikit-learn.org/stable/modules/generated/sklearn.datasets.fetch_mldata.html
-    http://mldata.org/repository/data/viewslug/mnist-original/
+    http://mldata.org/repository/data/viewslug/mnist/
     """
     mnist = fetch_mldata('mnist')
     X, y = mnist.data, mnist.target
@@ -150,7 +151,6 @@ def dmoz(tries):
     fn = os.path.join(os.path.dirname(__file__), "dmoz-web-directory-topics.libsvm")
     X, y = load_svmlight_file(fn)
     title = "Learning Curve Comparison for DMOZ"
-    print X.shape, y.shape
     plot_learning_curve(X, y, tries, title)
 
 
