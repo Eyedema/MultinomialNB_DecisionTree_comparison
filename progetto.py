@@ -9,7 +9,6 @@ from sklearn.datasets import load_digits
 from sklearn.datasets import load_svmlight_file
 from sklearn.datasets.mldata import fetch_mldata
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
@@ -98,7 +97,7 @@ def twenty_newsgroups(tries):
     http://scikit-learn.org/stable/datasets/twenty_newsgroups.html
     """
     newsgroups = fetch_20newsgroups(subset="all", remove=("headers", "quotes", "footers"))
-    X = TfidfTransformer().fit_transform(CountVectorizer().fit_transform(newsgroups.data))
+    X = CountVectorizer(binary=True).fit_transform(newsgroups.data)
     y = newsgroups.target
     title = "Learning Curve Comparison for 20newsgroups"
     plot_learning_curve(X, y, tries, title)
@@ -123,7 +122,7 @@ def mnist_data(tries):
     http://scikit-learn.org/stable/modules/generated/sklearn.datasets.fetch_mldata.html
     http://mldata.org/repository/data/viewslug/mnist-original/
     """
-    mnist = fetch_mldata('MNIST original')
+    mnist = fetch_mldata('mnist')
     X, y = mnist.data, mnist.target
     title = "Learning Curve Comparison for MNIST"
     plot_learning_curve(X, y, tries, title)
