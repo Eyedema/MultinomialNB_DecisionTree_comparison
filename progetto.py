@@ -95,8 +95,9 @@ def twenty_newsgroups(tries):
     the data and the target.
     http://scikit-learn.org/stable/datasets/twenty_newsgroups.html
     """
+    stop_words = select_stop_words()
     newsgroups = fetch_20newsgroups(subset="all", remove=("headers", "quotes", "footers"))
-    X = TfidfTransformer().fit_transform(CountVectorizer(stop_words='english').fit_transform(newsgroups.data))
+    X = TfidfTransformer().fit_transform(CountVectorizer(stop_words=stop_words).fit_transform(newsgroups.data))
     y = newsgroups.target
     title = "Learning Curve Comparison for 20newsgroups"
     plot_learning_curve(X, y, tries, title)
@@ -153,7 +154,9 @@ def dmoz(tries):
 
 
 def menu():
-    """This function prints the menu."""
+    """This function prints the menu.
+    :raise KeyError
+            if the input is not int"""
     print """Welcome,\n
             Please choose an option:\n
             1. 20newsgroups\n
@@ -162,26 +165,44 @@ def menu():
             4. DMOZ\n
             5. yahoo\n
             0. Quit"""
-    choice = input(">>")
+    try:
+        choice = input(">>")
+    except NameError:
+        print "Error"
+        menu()
     exec_choice(choice)
 
 
 def exec_choice(choice):
     """This function sets up the # of tries and calls the right function to start the test.
-    :raise KeyError
-            if the input is not int"""
+    """
     global start_time
-    if not isinstance(choice, int):
-        print "Error"
-        return
+    if choice == 0:
+        actions[choice]()
+    print "How many tries would you like to perform?"
     try:
-        print "How many tries would you like to perform?"
         tries = input(">>")
-        start_time = time.time()
-        actions[choice](tries)
-    except KeyError:
-        print "Invalid option"
+    except NameError:
+        print "Error"
         menu()
+    start_time = time.time()
+    actions[choice](tries)
+
+
+def select_stop_words():
+    print """"Would you like to use the English dictionary for the stopwords?\n
+          1. yes\n
+          0. no """
+    try:
+        stopwords = input(">>")
+    except NameError:
+        print "Error"
+        menu()
+    if stopwords == 1:
+        stop_words = 'english'
+    else:
+        stop_words = None
+    return stop_words
 
 
 def exit_program():
@@ -195,7 +216,7 @@ actions = {
     3: mnist_data,
     4: dmoz,
     5: yahoo,
-    0: exit
+    0: exit_program
 }
 
 menu()
