@@ -15,8 +15,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.tree import DecisionTreeClassifier
 
-from variables import MY_ID, MY_KEY
-
 
 def plot_learning_curve(X, y, tries, title):
     """This function plots the datas once the compute_scores function has done evaluating them.
@@ -43,8 +41,6 @@ def plot_learning_curve(X, y, tries, title):
     plt.xlabel("Train size %")
     plt.ylabel("Test set error")
     plt.grid()
-    #   save image debug
-    save(title.split()[len(title.split()) - 1], " ".join(np.vectorize("%.2f".__mod__)(xx)), tries)
     plt.show()
 
 
@@ -76,7 +72,9 @@ def compute_scores(X, y, tries, classifier):
     xx = 1. - np.array(heldout)
     yy = []
     std_dev = []
+    print "Training " + str(classifier) + "..."
     for i in xx:
+        print str(i * 100) + "%"
         yy_ = []
         for r in range(1, tries + 1):
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.5, train_size=i)
@@ -98,7 +96,7 @@ def twenty_newsgroups(tries):
     http://scikit-learn.org/stable/datasets/twenty_newsgroups.html
     """
     newsgroups = fetch_20newsgroups(subset="all", remove=("headers", "quotes", "footers"))
-    X = TfidfTransformer().fit_transform(CountVectorizer().fit_transform(newsgroups.data))
+    X = TfidfTransformer().fit_transform(CountVectorizer(stop_words='english').fit_transform(newsgroups.data))
     y = newsgroups.target
     title = "Learning Curve Comparison for 20newsgroups"
     plot_learning_curve(X, y, tries, title)
@@ -123,7 +121,7 @@ def mnist_data(tries):
     http://scikit-learn.org/stable/modules/generated/sklearn.datasets.fetch_mldata.html
     http://mldata.org/repository/data/viewslug/mnist/
     """
-    mnist = fetch_mldata('mnist')
+    mnist = fetch_mldata('mnist original')
     X, y = mnist.data, mnist.target
     title = "Learning Curve Comparison for MNIST"
     plot_learning_curve(X, y, tries, title)
@@ -189,22 +187,6 @@ def exec_choice(choice):
 def exit_program():
     """This function exits the program."""
     sys.exit()
-
-
-def save(name, percentages, tries):
-    import telepot
-    bot = telepot.Bot(MY_KEY)
-    import datetime
-    timestamp = time.time()
-    message = "Running time for %s with %s tries and train percentages of" \
-              " %s:\n%s seconds" % (name, tries, percentages, timestamp - start_time)
-    print message
-    value = datetime.datetime.fromtimestamp(timestamp)
-    date = (value.strftime('%d-%m h%Hm%Ms%S'))
-    name = 'plots/{} {} tries={} percentage={}.png'.format(name, date, tries, percentages)
-    plt.savefig(name)
-    bot.sendMessage(MY_ID, message)
-    bot.sendPhoto(MY_ID, open(name, 'rb'))
 
 
 actions = {
